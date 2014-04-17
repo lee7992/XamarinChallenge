@@ -17,7 +17,6 @@ from urllib.request import Request, urlopen   #lib for try/except
 from urllib.error import URLError, HTTPError  #lib for try/except
 
 
-
 website = urllib.request.urlopen('http://www.imdb.com/movies-in-theaters/?ref_=nv_mv_inth_1')
 websiteHTML = website.read()
     
@@ -25,13 +24,13 @@ req = Request('http://www.imdb.com/movies-in-theaters/?ref_=nv_mv_inth_1')
 try:
     response = urlopen(req)
 except HTTPError as e:
-    print('The server couldn\'t fulfill the request.')
+    print('The server couldn\'t fulfill the request.\n')
     print('Error code: ', e.code)
 except URLError as e:
-    print('We failed to reach a server.')
+    print('We failed to reach a server.\n')
     print('Reason: ', e.reason)
 else:
-    print('URL has been opened.')
+    print('URL has been opened.\n')
 
 soup =  BeautifulSoup(websiteHTML)
 
@@ -46,37 +45,56 @@ for n in soup.find_all('h4'):
 
 #print(link_list)
 
-newLink_list = []
+movLink_list = []
 for x in link_list:
-    newLink = 'www.imdb.com'+x
-    #print(newLink)
-    newLink_list.append(newLink)
+    movLink = 'http://www.imdb.com'+x
+    #print(movLink)
+    movLink_list.append(movLink)
 
-#print(title_list)    
-#print(newLink_list)
+print(title_list)    
+print(movLink_list)
 
+#print(newLink_list[0])
 
-if __name__ == '__main__':
+l = len(link_list)
+print('Number of links: ', l, '\n')
 
-    movielength = len(title_list)
-    print('There are ', movielength, ' movies currently listed:')
-    print('\n'.join(title_list))
+for x in range(l):
+    mov_site = urllib.request.urlopen(movLink_list[x])
+    mov_siteHTML = mov_site.read()
+    
+    new_req = Request(movLink_list[x])
+    try:
+        response = urlopen(req)
+    except HTTPError as e:
+        print('The server couldn\'t fulfill the request.')
+        print('Error code: ', e.code)
+    except URLError as e:
+        print('We failed to reach a server.')
+        print('Reason: ', e.reason)
+    else:
+        print('URL has been opened.')
+
+    movie_soup = BeautifulSoup(mov_siteHTML)
+
+    actor_list = []
+    actor_siteList = []
+    print('Actor list ', x, '\n')
+    for table in movie_soup.find_all('td', {"class":"primary_photo"}):
+        actor = table.img['title']
+        actor_list.append(actor)
+        print(actor)
+        actor_site = table.a['href']
+        actor_siteList.append(actor_site)
+        #print('Link: ', actor_site)
+
+        actorLink_list = []
+        actorLink = 'http://www.imdb.com'+actor_site
+        print('\t', actorLink)
+        actorLink_list.append(actorLink)
     print('\n')
-
-    linklength = len(newLink_list)
-    print('There are ', linklength, ' links to movies listed:')
-    print('\n'.join(newLink_list))
-    time.sleep(10)
-
-
-#print('title type: ', type(title_list[0]))
-#print('link type: ', type(link_list[0]))
-    #for link in soup.find_all('a'):
-     #   print(link.get('href'))
-        
-#print(soup.find_all('h4'))
-#websiteHTMLstr = bytes.decode(websiteHTML)
-#links = re.findall('"((http|ftp)s?://.*?)"', websiteHTMLstr)
+            
+print('\n', type(table))
 
 
 
@@ -94,7 +112,7 @@ if __name__ == '__main__':
 '''
 Friday: ~6hrs studying/learning
 Saturday: ~6hrs writing/coding
-Wednesday: ~7hrs
+Wednesday: ~9hrs
 '''
 
 
